@@ -1,0 +1,16 @@
+name: intel
+channels:
+  - pytorch
+dependencies:
+  - intel::intelpython3_core
+  - python=3.8
+  - pip
+  - pytorch::pytorch==1.11.0
+  - cpuonly
+  - conda-forge::scikit-learn
+  - neural-compressor
+  - pip:
+    - intel_extension_for_pytorch
+    - psutil
+    - transformers
+    - torchserve

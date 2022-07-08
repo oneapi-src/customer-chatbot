@@ -1,0 +1,16 @@
+# conf.yaml
+version: 1.0
+
+model: 
+        name: convai
+        framework: pytorch
+
+quantization:
+        approach: post_training_dynamic_quant
+
+tuning:
+        accuracy_criterion:
+                relative: 0.03
+        exit_policy:
+                timeout: 0
+                max_trials : 300

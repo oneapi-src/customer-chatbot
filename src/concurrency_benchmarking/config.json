@@ -1,0 +1,9 @@
+{
+  "url":"file:///PATH_TO_MAR",
+  "requests": 1000,
+  "concurrency": 10,
+  "content_type": "application/json",
+  "input": "PATH_TO_INPUT_FILE",
+  "config_properties" : "PATH_TO_CONFIG_PROPERTIES",
+  "exec_env": "local"
+}
