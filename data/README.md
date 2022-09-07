@@ -26,6 +26,6 @@ wget https://raw.githubusercontent.com/sz128/slot_filling_and_intent_detection_o
 2. Combine the `atis-2/train` and `atis-2/valid` files into one called `atis-2/train_all`.  In Linux, this can be done from the current directory using
 
 ```shell
-cat data/atis-2/train data/atis-2/valid > data/atis-2/train_all
-cd ..
+cat train valid > train_all
+cd ../..
 ```
