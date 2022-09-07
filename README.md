@@ -75,6 +75,8 @@ To reproduce the results in this repository, we describe the following tasks
 
 The script `setupenv.sh` is provided to automate the setup of the conda environments necessary for running the benchmarks on different settings.
 
+Before creating the environments, If you don't already have Anaconda, install and setup Anaconda for Linux following this [link](https://www.anaconda.com/products/distribution)
+
 Conda environment setup
 ```shell
 bash setupenv.sh
@@ -115,6 +117,10 @@ To run the benchmarks on a selected configuration, the corresponding environment
 ```shell
 conda activate convai_intel
 ```
+or
+```
+source activate convai_intel
+```
 
 ### 2. **Running the Benchmarks for Training**
 
@@ -137,14 +143,16 @@ optional arguments:
   --save_onnx           also export an ONNX model
 ```
 
+
 To run with stock technologies,
 ```shell
 conda activate convai_stock
 python run_training.py --logfile ../logs/stock.log -s ../saved_models/stock
 ```
 
+
 To run with Intel® technologies,
-```shell
+```
 conda activate convai_intel
 python -m intel_extension_for_pytorch.cpu.launch run_training.py --logfile ../logs/intel.log --intel -s ../saved_models/intel
 ```
@@ -192,7 +200,7 @@ As attention based models are independent of the sequence length, we can test on
 To run on benchmarks on the stock execution engine, use
 ```shell
 conda activate convai_stock
-python run_inference.py -s saved_model_dir --batch_size 200 --length 512 --n_runs 5
+python run_inference.py -s ../saved_models/stock --batch_size 200 --length 512 --n_runs 5
 ```
 
 To run benchmarks on the oneAPI PyTorch execution engine, use
