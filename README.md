@@ -77,6 +77,7 @@ Clone the repo as a first step
 
 ```
 git clone https://github.com/oneapi-src/customer-chatbot.git
+cd customer-chatbot
 ```
 
 The script `setupenv.sh` is provided to automate the setup of the conda environments necessary for running the benchmarks on different settings.
