@@ -73,7 +73,16 @@ To reproduce the results in this repository, we describe the following tasks
 
 ### 1. **Creating an execution environment**
 
+Clone the repo as a first step
+
+```
+git clone https://github.com/oneapi-src/customer-chatbot.git
+cd customer-chatbot
+```
+
 The script `setupenv.sh` is provided to automate the setup of the conda environments necessary for running the benchmarks on different settings.
+
+Before creating the environments, If you don't already have Anaconda, install and setup Anaconda for Linux following this [link](https://www.anaconda.com/products/distribution)
 
 Conda environment setup
 ```shell
@@ -115,6 +124,10 @@ To run the benchmarks on a selected configuration, the corresponding environment
 ```shell
 conda activate convai_intel
 ```
+or
+```
+source activate convai_intel
+```
 
 ### 2. **Running the Benchmarks for Training**
 
@@ -137,14 +150,19 @@ optional arguments:
   --save_onnx           also export an ONNX model
 ```
 
+Go to the source directory
+
+```cd ./src```
+
 To run with stock technologies,
 ```shell
 conda activate convai_stock
 python run_training.py --logfile ../logs/stock.log -s ../saved_models/stock
 ```
 
+
 To run with Intel® technologies,
-```shell
+```
 conda activate convai_intel
 python -m intel_extension_for_pytorch.cpu.launch run_training.py --logfile ../logs/intel.log --intel -s ../saved_models/intel
 ```
@@ -189,10 +207,12 @@ optional arguments:
 
 As attention based models are independent of the sequence length, we can test on different sequence lengths without introducing new parameters.  Both scripts run `n` times and prints the average time taken to call the predict on a batch of size `b` with sequence lenght `l`.
 
+```cd ./src```
+
 To run on benchmarks on the stock execution engine, use
 ```shell
 conda activate convai_stock
-python run_inference.py -s saved_model_dir --batch_size 200 --length 512 --n_runs 5
+python run_inference.py -s ../saved_models/stock --batch_size 200 --length 512 --n_runs 5
 ```
 
 To run benchmarks on the oneAPI PyTorch execution engine, use
@@ -206,9 +226,9 @@ Intel® Extension for PyTorch* contains many environment specific configuration 
 
 ```shell
 conda activate convai_intel
-OMP_NUM_THREADS=4 KMP_BLOCKTIME=50 python -m intel_extension_for_pytorch.cpu.launch --disable_numactl run_inference.py --intel -s saved_model_dir --batch_size 200 --length 512 --n_runs 5
+OMP_NUM_THREADS=4 KMP_BLOCKTIME=50 python -m intel_extension_for_pytorch.cpu.launch --disable_numactl run_inference.py --intel -s ../saved_models/intel --batch_size 200 --length 512 --n_runs 5
 
-OMP_NUM_THREADS=4 KMP_BLOCKTIME=50 python -m intel_extension_for_pytorch.cpu.launch --disable_numactl run_inference.py --intel -s saved_model_dir --batch_size 1 --length 512 --n_runs 1000
+OMP_NUM_THREADS=4 KMP_BLOCKTIME=50 python -m intel_extension_for_pytorch.cpu.launch --disable_numactl run_inference.py --intel -s ../saved_models/intel --batch_size 1 --length 512 --n_runs 1000
 ```
 
 ### 4. **Quantization**
@@ -249,16 +269,16 @@ A workflow of training -> INC quantization -> inference benchmarking may look li
 ```
 conda activate convai_intel
 # run training, outputs as saved_models/intel/convai.pt
-python -m intel_extension_for_pytorch.cpu.launch run_training.py -i -s saved_models/intel
+python -m intel_extension_for_pytorch.cpu.launch run_training.py -i -s ../saved_models/intel
 
 # quantize the trained model, outputs into the saved_models/intel_int8/best_model.pt directory
-python run_quantize_inc.py -s saved_models/intel/convai.pt -o saved_models/intel_int8/ -c config.yml
+python run_quantize_inc.py -s saved_models/intel/convai.pt -o ../saved_models/intel_int8/ -c config.yml
 
 # benchmark the non-quantized model using intel
-python -m intel_extension_for_pytorch.cpu.launch run_inference.py -i -s saved_models/intel/ -b 1 -n 1000
+python -m intel_extension_for_pytorch.cpu.launch run_inference.py -i -s ../saved_models/intel/ -b 1 -n 1000
 
 # benchmark the quantized model using intel
-python -m intel_extension_for_pytorch.cpu.launch run_inference.py -i -s saved_models/intel_int8/ -b 1 -n 1000 --is_inc_int8
+python -m intel_extension_for_pytorch.cpu.launch run_inference.py -i -s ../saved_models/intel_int8/ -b 1 -n 1000 --is_inc_int8
 ```
 
 ### 5. Concurrency

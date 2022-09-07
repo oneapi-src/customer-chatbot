@@ -43,7 +43,9 @@ def main(flags):
     if flags.logfile == "":
         logging.basicConfig(level=logging.DEBUG)
     else:
-        logging.basicConfig(filename=flags.logfile, level=logging.DEBUG)
+        path = pathlib.Path(flags.logfile)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        logging.basicConfig(filename=path, level=logging.DEBUG)
     logger = logging.getLogger()
 
     # Create tokenizer
