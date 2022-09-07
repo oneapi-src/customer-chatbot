@@ -77,7 +77,7 @@ The script `setupenv.sh` is provided to automate the setup of the conda environm
 
 Conda environment setup
 ```shell
-./setupenv.sh
+bash setupenv.sh
 ```
 
 The script provides the following options to create a conda execution environment:
@@ -198,7 +198,7 @@ python run_inference.py -s saved_model_dir --batch_size 200 --length 512 --n_run
 To run benchmarks on the oneAPI PyTorch execution engine, use
 ```shell
 conda activate convai_intel
-python -m intel_extension_for_pytorch.cpu.launch run_inference.py --intel -s saved_model_dir --batch_size 200 --length 512 --n_runs 5
+python -m intel_extension_for_pytorch.cpu.launch run_inference.py --intel -s ../saved_models/intel --batch_size 200 --length 512 --n_runs 5
 ```
 
 **Note:**
