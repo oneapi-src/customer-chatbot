@@ -10,7 +10,7 @@ dependencies:
   - conda-forge::scikit-learn
   - neural-compressor
   - pip:
-    - intel_extension_for_pytorch
+    - intel_extension_for_pytorch==1.11.200
     - psutil
     - transformers
     - torchserve
