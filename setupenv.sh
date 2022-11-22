@@ -20,7 +20,7 @@ exit 1
 }
 
 if [ $# -ne 0 ]; then
-]  PACKAGE=${PKG_ARRAY[0]}
+  PACKAGE=${PKG_ARRAY[0]}
   echo "Warning: No parameters expected. Applying default options..."
 else
  
