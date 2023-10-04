@@ -15,6 +15,8 @@ from typing import Union
 
 from sklearn.metrics import accuracy_score
 import torch
+import time
+from tqdm import tqdm
 
 from .model import IntentAndTokenClassifier
 
@@ -103,12 +105,12 @@ def train(
 
     model.train()
 
-    for epoch in range(1, epochs + 1):
+    for epoch in tqdm(range(1, epochs + 1)):
 
         running_loss = 0
         tr_tk_preds, tr_tk_labels = [], []
         tr_sq_preds, tr_sq_labels = [], []
-
+        start_time = time.time()
         for idx, batch in enumerate(dataloader):
 
             optimizer.zero_grad()
@@ -135,6 +137,10 @@ def train(
 
             tr_tk_logits = out[0]
             tr_sq_logits = out[2]
+
+            if idx % 10 == 0:
+                logger.info("time for 10 batches: %.4f", time.time() - start_time)
+                start_time = time.time()
 
             if idx % 100 == 0:
                 logger.info("loss/100 batches: %.4f", running_loss/(idx + 1))

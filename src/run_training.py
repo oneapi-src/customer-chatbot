@@ -17,6 +17,7 @@ import pathlib
 import time
 
 import torch
+import intel_extension_for_pytorch as ipex
 from torch.utils.data import DataLoader
 from transformers import BertTokenizerFast
 
@@ -41,9 +42,22 @@ def main(flags):
     """
 
     if flags.logfile == "":
-        logging.basicConfig(level=logging.DEBUG)
+        logging.root.handlers = []
+        logging.basicConfig(level=logging.DEBUG,
+                            format="%(asctime)s [%(levelname)s] %(message)s",
+                            handlers=[
+                                logging.StreamHandler()
+                            ])
     else:
-        logging.basicConfig(filename=flags.logfile, level=logging.DEBUG)
+        path = pathlib.Path(flags.logfile)
+        #path.parent.mkdir(parents=True, exist_ok=True)
+        logging.root.handlers = []
+        logging.basicConfig(level=logging.DEBUG, 
+                            format="%(asctime)s [%(levelname)s] %(message)s",
+                            handlers=[
+                                logging.FileHandler(path),
+                                logging.StreamHandler()
+                            ])
     logger = logging.getLogger()
 
     # Create tokenizer
@@ -51,9 +65,14 @@ def main(flags):
 
     # Read in the datasets and crate dataloaders
     logger.debug("Reading in the data...")
+    logger.error("Reading in the data...")
+    logger.debug("Reading in the data...")
+    logger.error("Reading in the data...")
+    logger.debug("Reading in the data...")
+    logger.error("Reading in the data...")
 
     try:
-        dataset = load_dataset("../data/atis-2/", tokenizer, MAX_LENGTH)
+        dataset = load_dataset(flags.dataset_dir, tokenizer, MAX_LENGTH)
     except FileNotFoundError as exc:
         logger.error("Please follow instructions to download data.")
         logger.error(exc, exc_info=True)
@@ -73,11 +92,7 @@ def main(flags):
     optimizer = torch.optim.Adam(params=model.parameters(), lr=1e-5)
 
     model.train()
-
-    # if using intel, optimize the model and the optimizer
-    if flags.intel:
-        import intel_extension_for_pytorch as ipex
-        model, optimizer = ipex.optimize(model, optimizer=optimizer)
+    model, optimizer = ipex.optimize(model, optimizer=optimizer)
 
     # Train the model
     logger.debug("Training the model...")
@@ -138,19 +153,20 @@ if __name__ == "__main__":
                         default="",
                         help="log file to output benchmarking results to")
 
-    parser.add_argument('-i',
-                        '--intel',
-                        default=False,
-                        action="store_true",
-                        help="use intel accelerated technologies where available"
-                        )
-
     parser.add_argument('-s',
                         '--save_model_dir',
                         default=None,
                         type=str,
                         required=False,
                         help="directory to save model under"
+                        )
+
+    parser.add_argument('-d',
+                        '--dataset_dir',
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="directory to dataset"
                         )
 
     parser.add_argument('--save_onnx',

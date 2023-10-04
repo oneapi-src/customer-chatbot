@@ -14,9 +14,11 @@ import argparse
 import logging
 import os
 import time
+from tqdm import tqdm
 
 import numpy as np
 import torch
+import intel_extension_for_pytorch as ipex
 from transformers import BertTokenizerFast
 
 from utils.dataloader import load_dataset
@@ -37,7 +39,7 @@ def inference(predict_fn, ids, mask, n_runs) -> float:
     """
     times = []
     predictions = []
-    for _ in range(2 + n_runs):
+    for _ in tqdm(range(2 + n_runs), desc="Running Inference: "):
         with torch.no_grad():
             start = time.time()
             res = predict_fn(ids, mask)
@@ -57,9 +59,15 @@ def main(flags) -> None:
     """
 
     if flags.logfile == "":
+        logging.root.handlers = []
         logging.basicConfig(level=logging.DEBUG)
     else:
-        logging.basicConfig(filename=flags.logfile, level=logging.DEBUG)
+        logging.root.handlers = []
+        logging.basicConfig(level=logging.DEBUG,
+                            handlers=[
+                                logging.FileHandler(flags.logfile),
+                                logging.StreamHandler()
+                            ])
     logger = logging.getLogger()
 
     batch_size = flags.batch_size
@@ -74,7 +82,7 @@ def main(flags) -> None:
     tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
 
     try:
-        dataset = load_dataset("../data/atis-2/", tokenizer, seq_length)
+        dataset = load_dataset(flags.dataset_dir, tokenizer, seq_length)
     except FileNotFoundError as exc:
         logger.error("Please follow instructions to download data.")
         logger.error(exc, exc_info=True)
@@ -98,15 +106,6 @@ def main(flags) -> None:
         )
 
         model = load(flags.saved_model_dir, model)
-
-        # re-establish logger because it breaks from above
-        logging.getLogger().handlers.clear()
-
-        if flags.logfile == "":
-            logging.basicConfig(level=logging.DEBUG)
-        else:
-            logging.basicConfig(filename=flags.logfile, level=logging.DEBUG)
-        logger = logging.getLogger()
     else:
         model = IntentAndTokenClassifier(
             num_token_labels=len(dataset['train'].tag2id),
@@ -120,78 +119,41 @@ def main(flags) -> None:
         ids = ids.view(1, -1)
         mask = mask.view(1, -1)
 
-    if flags.intel:
-        # if using intel, optimize the model
-        import intel_extension_for_pytorch as ipex
+    logger.info("Using IPEX to optimize model")
 
-        logger.info("Using IPEX to optimize model")
+    model.eval()
+    model = ipex.optimize(model)
+    model = torch.jit.trace(
+        model,
+        [
+            dataset['test'][0]['input_ids'].view(1, -1),
+            dataset['test'][0]['attention_mask'].view(1, -1)
+        ],
+        check_trace=False,
+        strict=False
+    )
+    model = torch.jit.freeze(model)
 
-        model.eval()
-        model = ipex.optimize(model)
-        model = torch.jit.trace(
-            model,
-            [
-                dataset['test'][0]['input_ids'].view(1, -1),
-                dataset['test'][0]['attention_mask'].view(1, -1)
-            ],
-            check_trace=False,
-            strict=False
-        )
-        model = torch.jit.freeze(model)
+    #cpu_pool = intel_extension_for_pytorch.cpu.runtime.CPUPool(node_id=0)
+    # @intel_extension_for_pytorch.cpu.runtime.pin(cpu_pool)
+    def predict(
+            input_ids: torch.Tensor,
+            attention_mask: torch.Tensor
+    ) -> torch.Tensor:
+        """Predicts the output for the given `input_ids` and
+            `attention_mask` using the given PyTorch model.
 
-        #cpu_pool = intel_extension_for_pytorch.cpu.runtime.CPUPool(node_id=0)
-        # @intel_extension_for_pytorch.cpu.runtime.pin(cpu_pool)
-        def predict(
-                input_ids: torch.Tensor,
-                attention_mask: torch.Tensor
-        ) -> torch.Tensor:
-            """Predicts the output for the given `input_ids` and
-               `attention_mask` using the given PyTorch model.
+        Args:
+            input_ids (torch.Tensor): input_ids Tensor from transformers
+                tokenizer
+            attention_mask (torch.Tensor): attention mask Tensor from
+                transformers tokenizer
 
-            Args:
-                input_ids (torch.Tensor): input_ids Tensor from transformers
-                    tokenizer
-                attention_mask (torch.Tensor): attention mask Tensor from
-                    transformers tokenizer
+        Returns:
+            torch.Tensor: predicted quantities
+        """
 
-            Returns:
-                torch.Tensor: predicted quantities
-            """
-
-            return model(input_ids=input_ids, attention_mask=attention_mask)
-    else:
-
-        logger.info("Using stock model")
-
-        model.eval()
-        model = torch.jit.trace(
-            model,
-            [
-                dataset['test'][0]['input_ids'].view(1, -1),
-                dataset['test'][0]['attention_mask'].view(1, -1)
-            ],
-            check_trace=False,
-            strict=False
-        )
-        model = torch.jit.freeze(model)
-
-        def predict(
-                input_ids: torch.Tensor,
-                attention_mask: torch.Tensor) -> torch.Tensor:
-            """Predicts the output for the given `input_ids` and
-                `attention_mask` using the given PyTorch model.
-
-            Args:
-                input_ids (torch.Tensor): input_ids Tensor from transformers
-                    tokenizer
-                attention_mask (torch.Tensor): attention mask Tensor from
-                    transformers tokenizer
-
-            Returns:
-                torch.Tensor: predicted quantities
-            """
-
-            return model(input_ids=input_ids, attention_mask=attention_mask)
+        return model(input_ids=input_ids, attention_mask=attention_mask)
 
     logger.info("Running experiment n = %d, b = %d, l = %d",
                 flags.n_runs, flags.batch_size, flags.length)
@@ -223,18 +185,19 @@ if __name__ == '__main__':
         help="saved model dir is a quantized int8 model. defaults to False."
     )
 
-    parser.add_argument('-i',
-                        '--intel',
-                        default=False,
-                        action="store_true",
-                        help="use intel accelerated technologies. defaults to False."
-                        )
-
     parser.add_argument('-b',
                         '--batch_size',
                         default=200,
                         help="batch size to use. defaults to 200.",
                         type=int
+                        )
+    
+    parser.add_argument('-d',
+                        '--dataset_dir',
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="directory to dataset"
                         )
 
     parser.add_argument('-l',

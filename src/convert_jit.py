@@ -30,7 +30,7 @@ def main(flags) -> None:
     # batch size and seq length for inference are not fixed model
     # parameters for BERT models
     tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
-    dataset = load_dataset("../data/atis-2/", tokenizer, 512)
+    dataset = load_dataset(flags.dataset_dir, tokenizer, 512)
     items = [dataset['test'][i] for i in range(1)]
     ids = torch.stack([item['input_ids'] for item in items])
     mask = torch.stack([item['attention_mask'] for item in items])
@@ -68,6 +68,7 @@ def main(flags) -> None:
     )
     model = torch.jit.freeze(model)
     torch.jit.save(model, flags.output_model)
+    print("Model exported to: {}".format(flags.output_model))
 
 
 if __name__ == '__main__':
@@ -85,6 +86,14 @@ if __name__ == '__main__':
                         required=True,
                         help="saved torchscript (.pt) model",
                         type=str
+                        )
+    
+    parser.add_argument('-d',
+                        '--dataset_dir',
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="directory to dataset"
                         )
     
     parser.add_argument(

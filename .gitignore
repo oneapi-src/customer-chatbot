@@ -134,3 +134,7 @@ dmypy.json
 
 # Cython debug symbols
 cython_debug/
+saved_models/
+data/atis-2
+nc_workspace/
+md-cmd/

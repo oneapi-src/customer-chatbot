@@ -1,0 +1,48 @@
+version: "3"
+services:
+  devkitminimal:
+    build:
+      args:
+        BASE_NAME: continuumio/miniconda3
+        BASE_TAG: ${BASE_TAG:-latest}
+        CONDA_VERSION: ${BASE_TAG:-23.5.0}
+        http_proxy: ${http_proxy}
+        HTTP_PROXY: ${HTTP_PROXY}
+        https_proxy: ${https_proxy}
+        HTTPS_PROXY: ${HTTPS_PROXY}
+        no_proxy: ${no_proxy}
+        ftp_proxy: ${ftp_proxy}
+        PORT: ${PORT:-8888}
+      context: ../
+      dockerfile: docker/Dockerfile
+      target: devkitminimal
+    image: devkitminimal
+
+  devkitintelfull39:
+    build:
+      target: devkitintelfull39
+    extends:
+      service: devkitminimal
+    image: devkitintelfull39
+
+  jupyter_server:
+    image: ${COMPOSE_PROJECT_NAME}:latest
+    build:
+      target: jupyter_server
+    command: bash -c "source /opt/conda/bin/activate && conda activate jupyter_server && jupyter notebook --notebook-dir=/workspace/devkit --ip 0.0.0.0 --port ${PORT} --no-browser --allow-root"
+    environment:
+      - PORT=${PORT}
+      - WORKSPACE=/workspace/devkit
+      - DATA_DIR=/workspace/devkit/data
+      - OUTPUT_DIR=/workspace/devkit/output
+      - CONFIG_DIR=/workspace/devkit/config
+    extends:
+      service: devkitintelfull39
+    ports:
+      - "${PORT}:${PORT}"
+    privileged: true
+    volumes:
+      - "${WORKSPACE}:/workspace/devkit"
+      - "${DATA_DIR}:/workspace/devkit/data"
+      - "${OUTPUT_DIR}:/workspace/devkit/output"
+      - "${CONFIG_DIR}:/workspace/devkit/config"

@@ -18,7 +18,7 @@ import shutil
 
 import intel_extension_for_pytorch as ipex
 from neural_compressor.experimental import Quantization, common
-from neural_compressor.model.torch_model import PyTorchIpexModel
+from neural_compressor.model.torch_model import IPEXModel
 from sklearn.metrics import accuracy_score
 import torch
 from transformers import BertTokenizerFast
@@ -71,7 +71,7 @@ def main(flags) -> None:
 
     tokenizer = BertTokenizerFast.from_pretrained("bert-base-uncased")
     try:
-        dataset = load_dataset("../data/atis-2/", tokenizer, flags.length)
+        dataset = load_dataset(flags.dataset_dir, tokenizer, flags.length)
     except FileNotFoundError as exc:
         logger.error("Please follow instructions to download data.")
         logger.error(exc, exc_info=True)
@@ -189,7 +189,7 @@ def main(flags) -> None:
     quantized_model = quantizer.fit()
 
     # save the quantized model as a .pt
-    if isinstance(quantized_model, PyTorchIpexModel):
+    if isinstance(quantized_model, IPEXModel):
 
         # ipex models save as configs, which need to be saved to a serialized model
         fname = Path(flags.saved_model).stem
@@ -244,7 +244,15 @@ if __name__ == '__main__':
                         help="INC conf yaml.",
                         required=True
                         )
-
+    
+    parser.add_argument('-d',
+                        '--dataset_dir',
+                        default=None,
+                        type=str,
+                        required=True,
+                        help="directory to dataset"
+                        )
+    
     FLAGS = parser.parse_args()
 
     main(FLAGS)
