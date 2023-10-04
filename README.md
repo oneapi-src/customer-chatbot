@@ -166,6 +166,7 @@ Apache* Utils will also be needed:
 sudo apt-get install apache2-utils
 ```
 Model Archiver will be used to produce `.mar` files (this file can then be redistributed and served by anyone using TorchServe*):
+
 [//]: # (capture: baremetal)
 ```bash
 python -m pip install torch-model-archiver captum
