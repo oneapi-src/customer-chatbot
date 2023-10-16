@@ -163,7 +163,7 @@ For running concurrency benchmarking we will need to install additional dependan
 
 Apache* Utils will also be needed:
 ```bash
-sudo apt-get install apache2-utils
+sudo apt-get install apache2-utils git
 ```
 Model Archiver will be used to produce `.mar` files (this file can then be redistributed and served by anyone using TorchServe*):
 
