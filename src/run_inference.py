@@ -74,7 +74,7 @@ def main(flags) -> None:
     seq_length = flags.length
 
     if not os.path.exists(flags.saved_model_dir):
-        logger.error("Saved model %s not found!", flags.saved_model_dir)
+        logger.error("Saved model not found!")
         return
 
     # batch size and seq length for inference are not fixed model

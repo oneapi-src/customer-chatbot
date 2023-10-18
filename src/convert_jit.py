@@ -68,7 +68,7 @@ def main(flags) -> None:
     )
     model = torch.jit.freeze(model)
     torch.jit.save(model, flags.output_model)
-    print("Model exported to: {}".format(flags.output_model))
+    print(f"Model exported to: {flags.output_model}")
 
 
 if __name__ == '__main__':
