@@ -1,5 +1,5 @@
-# Copyright (c) 2022 Intel Corporation
-# SPDX-License-Identifier: BSD 3 Clause
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: BSD-3-Clause
 
 ARG BASE_NAME=continuumio/miniconda3
 ARG IDP_VERSION=${IDP_VERSION}

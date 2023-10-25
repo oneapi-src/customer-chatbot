@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Copyright (C) 2023 Intel Corporation
+# SPDX-License-Identifier: BSD-3-Clause
+
 echo 'Search for requirements.yml files'
 env_paths=$(find -wholename './env/*.yml')
 echo Found $env_paths
