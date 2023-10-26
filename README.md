@@ -1,4 +1,4 @@
-# Artificial Inteligence-Powered Customer Care Chatbots
+# Customer Care Chatbot
 
 ## Introduction
 Customers across various industries expect quick and accurate responses to their queries. Artificial Inteligence(AI)-Powered Customer Care Chatbots aim to provide this, but building efficient chatbots that can understand user intent and entities in real-time queries is challenging.
