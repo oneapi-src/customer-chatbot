@@ -6,7 +6,7 @@ dependencies:
   - intel::intelpython3_core==2023.2.0=py39_0
   - transformers==4.33.0
   - cpuonly==1.0
-  - intel:pip
+  - intel::pip
   - pip:
     - torch==2.0.1
     - intel-extension-for-pytorch==2.0.100
