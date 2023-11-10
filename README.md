@@ -51,8 +51,7 @@ The [Intel® Extension for PyTorch* ](https://pytorch.org/tutorials/recipes/reci
 
 ## Validated Hardware Details
 There are workflow-specific hardware and software setup requirements depending on
-how the workflow is run. Bare metal development system and Docker\* image running
-locally have the same system requirements.
+how the workflow is run. Bare metal development system has the same system requirements.
 
 | Recommended Hardware                                            | Precision
 | --------------------------------------------------------------- | ------------
@@ -246,12 +245,11 @@ cd $WORKSPACE
 You can execute the references pipelines using the following environments:
 * Bare Metal
 * Jupyter Notebook
-* Docker*
 
 ---
 
 ### Run Using Bare Metal
-Follow these instructions to set up and run this workflow on your own development system. For running a provided Docker* image with Docker*, see the [Docker* instructions](#run-using-docker).
+Follow these instructions to set up and run this workflow on your own development system.
 
 #### Set Up System Software
 Our examples use the ``conda`` package and environment on your local computer. If you don't already have ``conda`` installed, go to [Set Up Conda*](#set-up-conda) or see the [Conda* Linux installation instructions](https://docs.conda.io/projects/conda/en/stable/user-guide/install/linux.html).
@@ -569,63 +567,6 @@ Open Jupyter Notebook in a web browser, select GettingStarted.ipynb and select c
 #### Clean Up Jupyer Notebook
 To clean Jupyter Notebook follow the instructions described in [Clean Up Bare Metal](#clean-up-bare-metal).
 
-### Run Using Docker*
-Follow these instructions to set up and run our provided Docker* image.
-For running on bare metal, see the [bare metal instructions](#run-using-bare-metal).
-
-#### Set Up Docker* Engine
-You will need to install Docker* Engine on your development system.
-Note that while **Docker* Engine** is free to use, **Docker* Desktop** may require you to purchase a license. See the [Docker* Engine Server installation instructions](https://docs.docker.com/engine/install/#server) for details.
-
-#### Setup Docker* Compose
-Ensure you have Docker* Compose installed on your machine. If you don't have this tool installed, consult the official [Docker* Compose installation documentation](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually).
-
-```bash
-DOCKER_CONFIG=${DOCKER_CONFIG:-$HOME/.docker}
-mkdir -p $DOCKER_CONFIG/cli-plugins
-curl -SL https://github.com/docker/compose/releases/download/v2.7.0/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose
-chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
-docker compose version
-```
-
-#### Set Up Docker* Image
-If your environment requires a proxy to access the internet, export your
-development system's proxy settings to the Docker* environment at `docker-compose.yml` file.
-
-1. Follow the instructions described on [Get Started](#get-started) to set required environment variables.
-
-2. Add next environment variables used to build and run the Docker* image:
-
-    ```bash
-    export PORT=8888 # port used by jupyter server
-    export COMPOSE_PROJECT_NAME=customer_chatbot
-    ```
-
-3. Build the Docker* image using docker-compose.yml file provided in `docker` directory:
-
-    ```bash
-    cd $WORKSPACE/docker
-    docker compose build
-    ```
-
-#### Run Workflow
-We provide a dockerfile and docker-compose file to quickly and easily build a container with everything necessary to be able to run the workflow. Instructions can be found in [docker folder](docker/README.md)
-
-1. Execute next commands to run the image and start a new bash session inside the container:
-    ```bash
-    cd $WORKSPACE/docker
-    docker compose -p ${USER} run jupyter_server bash
-    ```
-3. Execute [Running the benchmarks](#run-workflow) steps.
-
-#### Clean Up Docker* Containers
-1. Follow these clean steps inside the Docker* container.
-
-    ```bash
-    cd $WORKSPACE/docker
-    docker compose down
-    ```
-
 ### Expected Output
 Training output is stored in `$OUTPUT_DIR/logs` directory. You can see information on training time and training loss and accuracy per epoch. The final information should look similarly to below:
 ```bash
@@ -675,8 +616,6 @@ For more information about or to read about other relevant workflow examples, se
 - [PyTorch*](https://pytorch.org/get-started/locally/)
 - [TorchServe* benchmarking tools](https://github.com/pytorch/serve/tree/master/benchmarks#benchmarking-with-apache-bench)
 - [Conda* Linux installation instructions](https://docs.conda.io/projects/conda/en/stable/user-guide/install/linux.html)
-- [Docker* Engine Server installation instructions](https://docs.docker.com/engine/install/#server)
-- [Docker* Compose installation documentation](https://docs.docker.com/compose/install/linux/#install-the-plugin-manually)
 - [Intel® AI Analytics Toolkit (AI Kit)](https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html)
 - [Intel® oneAPI AI Analytics Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/ai-analytics-toolkit.html)
 - [Intel® Extension for PyTorch* ](https://pytorch.org/tutorials/recipes/recipes/intel_extension_for_pytorch.html)
