@@ -51,7 +51,7 @@ The [Intel® Extension for PyTorch* ](https://pytorch.org/tutorials/recipes/reci
 
 ## Validated Hardware Details
 There are workflow-specific hardware and software setup requirements depending on
-how the workflow is run. Bare metal development system has the same system requirements.
+how the workflow is run.
 
 | Recommended Hardware                                            | Precision
 | --------------------------------------------------------------- | ------------
