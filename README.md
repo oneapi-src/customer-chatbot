@@ -100,7 +100,7 @@ directory.
 
 ```bash
 mkdir -p $WORKSPACE && cd $WORKSPACE
-git clone git@github.com:oneapi-src/customer-chatbot.git $WORKSPACE
+git clone https://github.com/oneapi-src/customer-chatbot.git $WORKSPACE
 ```
 
 Create following directories.
