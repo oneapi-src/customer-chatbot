@@ -100,7 +100,7 @@ directory.
 
 ```bash
 mkdir -p $WORKSPACE && cd $WORKSPACE
-git clone https://github.com/intel-innersource/frameworks.ai.platform.sample-apps.customer-chatbot.git $WORKSPACE
+git clone https://github.com/oneapi-src/customer-chatbot.git $WORKSPACE
 ```
 
 Create following directories.
