@@ -176,7 +176,7 @@ You then need to clone the TorchServe* repo:
 [//]: # (capture: baremetal)
 ```bash
 export TORCH_SERVE_DIR=$WORKSPACE/src/concurrency_benchmarking/serve
-git clone https://github.com/pytorch/serve.git --branch v0.8.2 $TORCH_SERVE_DIR
+git clone https://github.com/pytorch/serve.git --branch v0.9.0 $TORCH_SERVE_DIR
 ```
 
 Once the repo has been cloned follow the next steps or follow the steps described at [Quick start with TorchServe*](https://github.com/pytorch/serve#-quick-start-with-torchserve):
@@ -185,7 +185,7 @@ Once the repo has been cloned follow the next steps or follow the steps describe
 ```bash
 cd $TORCH_SERVE_DIR
 python ./ts_scripts/install_dependencies.py
-python -m pip install torchserve torch-model-archiver torch-workflow-archiver click-config-file
+python -m pip install torch==2.1.1 torchserve==0.9.0 torch-model-archiver==0.9.0 torch-workflow-archiver==0.2.11 click-config-file==0.6.0
 ```
 
 After installing TorchServe*, Apache* Bench is needed in order to run the [benchmarks](https://github.com/pytorch/serve/tree/master/benchmarks#benchmarking-with-apache-bench). Follow the next instructions to install pip dependencies:
@@ -545,7 +545,6 @@ conda deactivate
 conda remove --name customer_chatbot_intel --all -y
 ```
 
-[//]: # (capture: baremetal)
 ```bash
 rm -rf $OUTPUT_DIR/saved_models/ $DATA_DIR/atis-2/ $OUTPUT_DIR/logs $TORCH_SERVE_DIR
 ```
