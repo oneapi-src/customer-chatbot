@@ -3,14 +3,11 @@ channels:
   - intel
   - conda-forge
 dependencies:
-  - intel::intelpython3_core==2024.0.0
   - intel::python==3.9.18
   - aiohttp==3.9.1
   - cpuonly==1.0
   - intel::pip==23.3
   - pip:
     - torch==2.1.1
-    - intel-extension-for-pytorch==2.1.100
     - torchserve==0.9.0
-    - neural-compressor==2.4
     - transformers==4.36.2
